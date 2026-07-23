@@ -295,9 +295,4 @@ export default function harperGrammar(pi: ExtensionAPI): void {
     description: "Apply grammar fixes to the chat input",
     handler: (ctx) => applyFixesNow(ctx),
   });
-
-  pi.registerCommand("grammar-fix", {
-    description: "Apply suggested grammar fixes to the current chat input",
-    handler: async (_args, ctx) => applyFixesNow(ctx),
-  });
 }

@@ -55,7 +55,6 @@ lists any issues below the editor. The widget clears when the input is empty,
 corrected, or a slash command.
 
 - **`alt+g`** — apply Harper's suggested fixes to the current input, in place.
-- **`/grammar-fix`** — same as `alt+g`, as a slash command.
 - **`/grammar`** — toggle the live checker on/off.
 
 `alt+g` applies the issues Harper can concretely replace (spelling, agreement,
