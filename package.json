@@ -26,6 +26,13 @@
   "pi": {
     "extensions": ["./extensions"]
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.6.0"
+  },
   "files": [
     "extensions",
     "README.md",

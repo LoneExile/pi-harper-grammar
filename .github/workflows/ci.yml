@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Verify package contents
+        run: |
+          set -euo pipefail
+          npm pack --silent
+          tar tzf pi-harper-grammar-*.tgz | tee /tmp/files.txt
+          grep -qx 'package/extensions/harper-grammar.ts' /tmp/files.txt
+          grep -qx 'package/package.json' /tmp/files.txt
+          grep -qx 'package/README.md' /tmp/files.txt
+          grep -qx 'package/LICENSE' /tmp/files.txt
+          rm -f pi-harper-grammar-*.tgz

@@ -1,0 +1,38 @@
+name: Release
+
+# Publishes to npm when a GitHub Release is published (tag the release with the
+# version, e.g. v0.1.0, after bumping "version" in package.json). Can also be
+# run manually. Requires an npm "Automation" access token stored as the
+# repository secret NPM_TOKEN (Automation tokens bypass 2FA for CI publishes).
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  id-token: write # npm provenance (OIDC)
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
