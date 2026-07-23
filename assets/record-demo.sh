@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Regenerate assets/demo.gif + assets/demo.mp4.
+#
+# Recorded from a REAL terminal (not VHS): VHS runs inside ttyd/xterm.js, which
+# drops the Alt/Meta modifier, so it cannot emit the alt+g chord. We drive a real
+# OMP session inside tmux (where `send-keys M-g` delivers alt+g correctly),
+# record it with asciinema, then render to GIF/MP4 with agg + ffmpeg.
+#
+# Requires: tmux, asciinema, agg, ffmpeg, omp, harper-cli, and the
+# "JetBrainsMono Nerd Font Mono" font installed.
+set -euo pipefail
+
+here="$(cd "$(dirname "$0")" && pwd)"
+cast="$(mktemp -t harper-demo).cast"
+work="$(mktemp -d)/capdemo"
+mkdir -p "$work" && git -C "$work" init -q
+
+tmux kill-session -t hgcap 2>/dev/null || true
+tmux new-session -d -s hgcap -x 110 -y 16
+tmux send-keys -t hgcap "asciinema rec --overwrite -i 1 --window-size 110x16 '$cast' -c 'omp --no-session --no-title --cwd $work'" Enter
+sleep 16                                   # let OMP boot
+tmux send-keys -t hgcap 'i dont think its right'
+sleep 3.5                                  # live grammar widget appears
+tmux send-keys -t hgcap M-g                # the real alt+g chord → applies fixes
+sleep 3                                    # fix applies; poll re-checks and clears the widget
+kill -INT "$(pgrep -f 'asciinema rec' | head -1)"   # stop on the clean state (no input-clear)
+sleep 2
+tmux kill-session -t hgcap 2>/dev/null || true
+
+agg --font-family "JetBrainsMono Nerd Font Mono" --font-size 18 --theme dracula \
+    --idle-time-limit 1 --speed 1.2 "$cast" "$here/demo.gif"
+ffmpeg -y -i "$here/demo.gif" -movflags +faststart -pix_fmt yuv420p \
+    -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" "$here/demo.mp4"
+
+echo "wrote $here/demo.gif and $here/demo.mp4"
