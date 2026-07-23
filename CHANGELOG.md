@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-07-23
+
+### Added
+
+- Ship `CHANGELOG.md` inside the published npm tarball.
+
+### Changed
+
+- Repository tooling: CI typecheck workflow, tokenless (OIDC) npm release
+  workflow with provenance, and Renovate for dependency updates. No runtime
+  behavior change.
+
 ## [0.1.0] - 2026-07-23
 
 ### Added
@@ -18,5 +30,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `$HARPER_CLI` override and a one-line install hint when `harper-cli` is not
   found on `PATH`.
 
-[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/LoneExile/pi-harper-grammar/releases/tag/v0.1.0
