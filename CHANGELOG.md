@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.2] - 2026-07-23
+
+### Fixed
+
+- Show a description under the plugin in `omp plugin list` (OMP reads it from an
+  `omp` manifest key, not the top-level npm `description`).
+
 ## [0.2.1] - 2026-07-23
 
 ### Fixed
@@ -67,7 +74,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `$HARPER_CLI` override and a one-line install hint when `harper-cli` is not
   found on `PATH`.
 
-[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.2...v0.1.3

@@ -30,6 +30,15 @@
     "video": "https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.mp4",
     "image": "https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.gif"
   },
+  "omp": {
+    "name": "pi-harper-grammar",
+    "description": "Live grammar-check (and one-key alt+g fix) of the chat input box, powered by Harper.",
+    "extensions": [
+      "./extensions"
+    ],
+    "video": "https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.mp4",
+    "image": "https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.gif"
+  },
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
