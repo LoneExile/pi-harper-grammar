@@ -145,7 +145,7 @@ function renderWidget(ctx: ExtensionContext, lints: HarperLint[]): void {
     return;
   }
   const fixable = lints.some((l) => extractReplacement(l.suggestions?.[0]) !== null);
-  const header = `⚠ Harper: ${lints.length} issue${lints.length === 1 ? "" : "s"}${fixable ? "  ·  alt+g to fix" : ""}`;
+  const header = `⚠ Grammar: ${lints.length} issue${lints.length === 1 ? "" : "s"}${fixable ? "  ·  alt+g to fix" : ""}`;
   const lines: string[] = [header];
   for (const l of lints.slice(0, MAX_LINES)) {
     const fix = cleanSuggestion(l.suggestions?.[0]);
@@ -158,7 +158,7 @@ function renderWidget(ctx: ExtensionContext, lints: HarperLint[]): void {
 }
 
 export default function harperGrammar(pi: ExtensionAPI): void {
-  pi.setLabel("Harper grammar");
+  pi.setLabel("Grammar");
 
   let enabled = true;
   let bin: string | null = null; // resolved harper-cli path, or null before first probe
@@ -196,7 +196,7 @@ export default function harperGrammar(pi: ExtensionAPI): void {
       if (!missing) {
         missing = true;
         ctx.ui.setWidget(WIDGET_KEY, [
-          "⚠ Harper: harper-cli not found on PATH",
+          "⚠ Grammar: harper-cli not found on PATH",
           "  install harper-cli — see https://writewithharper.com  (or set $HARPER_CLI)",
         ]);
       }
@@ -246,7 +246,7 @@ export default function harperGrammar(pi: ExtensionAPI): void {
   });
 
   pi.registerCommand("grammar", {
-    description: "Toggle live Harper grammar checking of the chat input",
+    description: "Toggle live grammar checking of the chat input",
     handler: async (_args, ctx) => {
       enabled = !enabled;
       if (!enabled) {
@@ -256,7 +256,7 @@ export default function harperGrammar(pi: ExtensionAPI): void {
         lastChecked = "\u0000";
         lastSeen = "\u0000";
       }
-      ctx.ui.notify(`Harper grammar checking ${enabled ? "on" : "off"}`, "info");
+      ctx.ui.notify(`Grammar checking ${enabled ? "on" : "off"}`, "info");
     },
   });
 
@@ -271,13 +271,13 @@ export default function harperGrammar(pi: ExtensionAPI): void {
     const text = raw.trim();
     // Only act on lints that match the text currently in the editor.
     if (text.length === 0 || text !== lastLintedText || lastLints.length === 0) {
-      ctx.ui.setStatus(STATUS_KEY, "Harper: nothing to fix");
+      ctx.ui.setStatus(STATUS_KEY, "Grammar: nothing to fix");
       appliedStatusText = text;
       return;
     }
     const { fixed, applied } = fixText(text, lastLints);
     if (applied === 0) {
-      ctx.ui.setStatus(STATUS_KEY, "Harper: no auto-fixable issues");
+      ctx.ui.setStatus(STATUS_KEY, "Grammar: no auto-fixable issues");
       appliedStatusText = text;
       return;
     }
@@ -287,17 +287,17 @@ export default function harperGrammar(pi: ExtensionAPI): void {
     lastSeen = "\u0000";
     lastLints = [];
     lastLintedText = "";
-    ctx.ui.setStatus(STATUS_KEY, `Harper: applied ${applied} fix${applied === 1 ? "" : "es"}`);
+    ctx.ui.setStatus(STATUS_KEY, `Grammar: applied ${applied} fix${applied === 1 ? "" : "es"}`);
     appliedStatusText = fixed.trim();
   }
 
   pi.registerShortcut("alt+g", {
-    description: "Apply Harper's grammar fixes to the chat input",
+    description: "Apply grammar fixes to the chat input",
     handler: (ctx) => applyFixesNow(ctx),
   });
 
   pi.registerCommand("grammar-fix", {
-    description: "Apply Harper's suggested fixes to the current chat input",
+    description: "Apply suggested grammar fixes to the current chat input",
     handler: async (_args, ctx) => applyFixesNow(ctx),
   });
 }

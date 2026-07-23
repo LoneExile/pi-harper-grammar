@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2026-07-23
+
+### Changed
+
+- On-screen labels now read "Grammar" instead of "Harper" (widget, status
+  messages, command descriptions). Harper remains the engine — attribution kept
+  in the README and package description. (The demo GIF still shows the old
+  "Harper" label; it will refresh on the next re-record.)
+
 ## [0.2.2] - 2026-07-23
 
 ### Fixed
@@ -74,7 +83,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `$HARPER_CLI` override and a one-line install hint when `harper-cli` is not
   found on `PATH`.
 
-[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.2...HEAD
+[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.3...HEAD
+[0.2.3]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.2...v0.2.3
 [0.2.2]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.3...v0.2.0
