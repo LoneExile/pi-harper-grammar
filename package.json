@@ -1,0 +1,34 @@
+{
+  "name": "pi-harper-grammar",
+  "version": "0.1.0",
+  "description": "Live grammar checking of the Pi/OMP chat input box, powered by Harper. Lints what you are about to send — not files.",
+  "keywords": [
+    "pi-package",
+    "pi",
+    "omp",
+    "oh-my-pi",
+    "extension",
+    "grammar",
+    "harper",
+    "spell-check",
+    "writing"
+  ],
+  "license": "MIT",
+  "author": "LoneExile",
+  "homepage": "https://github.com/LoneExile/pi-harper-grammar#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LoneExile/pi-harper-grammar.git"
+  },
+  "bugs": {
+    "url": "https://github.com/LoneExile/pi-harper-grammar/issues"
+  },
+  "pi": {
+    "extensions": ["./extensions"]
+  },
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE"
+  ]
+}
