@@ -1,6 +1,6 @@
 {
   "name": "pi-harper-grammar",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "Type it right, make the agent guess less — live grammar-check (and one-key alt+g fix) for the Pi/OMP chat input, powered by Harper.",
   "keywords": [
     "pi-package",
