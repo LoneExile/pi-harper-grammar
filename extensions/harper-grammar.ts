@@ -11,6 +11,7 @@ type WidgetPlacement = "aboveEditor" | "belowEditor";
 interface ExtensionUI {
   setWidget(key: string, content: string[] | undefined, options?: { placement?: WidgetPlacement }): void;
   getEditorText(): string;
+  setEditorText(text: string): void;
   notify(message: string, type?: "info" | "warning" | "error"): void;
 }
 interface ExtensionContext {
@@ -26,6 +27,10 @@ interface ExtensionAPI {
   registerCommand(
     name: string,
     def: { description: string; handler: (args: string, ctx: ExtensionContext) => void | Promise<void> },
+  ): void;
+  registerShortcut(
+    shortcut: string,
+    def: { description?: string; handler: (ctx: ExtensionContext) => void | Promise<void> },
   ): void;
 }
 
@@ -43,6 +48,7 @@ interface HarperLint {
   matched_text: string;
   message: string;
   suggestions: string[];
+  span?: { char_start: number; char_end: number };
 }
 
 function cleanSuggestion(s: string | undefined): string {
@@ -51,6 +57,42 @@ function cleanSuggestion(s: string | undefined): string {
   const m = s.match(/“([^”]+)”/);
   if (m) return m[1];
   return s.replace(/^\s*Replace with:\s*/i, "").trim();
+}
+
+// Pull the literal replacement out of a Harper suggestion ("Replace with: “X”").
+// Returns null for non-replacement suggestions, which are left un-fixed.
+function extractReplacement(suggestion: string | undefined): string | null {
+  if (!suggestion) return null;
+  const m = suggestion.match(/^Replace with:\s*“(.*)”$/s);
+  return m ? m[1] : null;
+}
+
+// Apply Harper's replacement suggestions to `text`. Edits are applied
+// right-to-left by span so earlier offsets stay valid; overlapping spans are skipped.
+function fixText(text: string, lints: HarperLint[]): { fixed: string; applied: number } {
+  const edits: { start: number; end: number; rep: string }[] = [];
+  for (const l of lints) {
+    const rep = extractReplacement(l.suggestions?.[0]);
+    if (rep === null) continue;
+    const start = l.span?.char_start;
+    const end = l.span?.char_end;
+    if (typeof start !== "number" || typeof end !== "number" || start < 0 || end > text.length || start >= end) {
+      continue;
+    }
+    edits.push({ start, end, rep });
+  }
+  edits.sort((a, b) => b.start - a.start);
+  let fixed = text;
+  let applied = 0;
+  let lastStart = Number.POSITIVE_INFINITY;
+  for (const e of edits) {
+    if (e.end <= lastStart) {
+      fixed = fixed.slice(0, e.start) + e.rep + fixed.slice(e.end);
+      lastStart = e.start;
+      applied += 1;
+    }
+  }
+  return { fixed, applied };
 }
 
 function runHarper(bin: string, text: string): Promise<{ lints: HarperLint[]; enoent: boolean }> {
@@ -101,7 +143,9 @@ function renderWidget(ctx: ExtensionContext, lints: HarperLint[]): void {
     ctx.ui.setWidget(WIDGET_KEY, undefined);
     return;
   }
-  const lines: string[] = [`⚠ Harper: ${lints.length} issue${lints.length === 1 ? "" : "s"}`];
+  const fixable = lints.some((l) => extractReplacement(l.suggestions?.[0]) !== null);
+  const header = `⚠ Harper: ${lints.length} issue${lints.length === 1 ? "" : "s"}${fixable ? "  ·  alt+g to fix" : ""}`;
+  const lines: string[] = [header];
   for (const l of lints.slice(0, MAX_LINES)) {
     const fix = cleanSuggestion(l.suggestions?.[0]);
     const matched = (l.matched_text ?? "").replace(/\s+/g, " ").trim();
@@ -123,6 +167,8 @@ export default function harperGrammar(pi: ExtensionAPI): void {
   let lastChecked = ""; // text most recently sent to harper (dedupe)
   let running = false;
   let started = false; // guard against a second session_start registering a 2nd timer
+  let lastLints: HarperLint[] = []; // full lint set from the most recent check (for fixing)
+  let lastLintedText = ""; // the exact (trimmed) text those lints were computed against
 
   async function check(ctx: ExtensionContext, text: string): Promise<void> {
     running = true;
@@ -138,6 +184,8 @@ export default function harperGrammar(pi: ExtensionAPI): void {
         }
         bin = candidate; // lock in the working binary
         lastChecked = text;
+        lastLints = lints;
+        lastLintedText = text;
         renderWidget(ctx, lints);
         return;
       }
@@ -171,6 +219,8 @@ export default function harperGrammar(pi: ExtensionAPI): void {
         // Empty input or a slash command — clear any stale grammar widget.
         lastChecked = text;
         lastSeen = text;
+        lastLints = [];
+        lastLintedText = "";
         ctx.ui.setWidget(WIDGET_KEY, undefined);
         return;
       }
@@ -201,5 +251,43 @@ export default function harperGrammar(pi: ExtensionAPI): void {
       }
       ctx.ui.notify(`Harper grammar checking ${enabled ? "on" : "off"}`, "info");
     },
+  });
+
+  function applyFixesNow(ctx: ExtensionContext): void {
+    if (!ctx.hasUI) return;
+    let raw: string;
+    try {
+      raw = ctx.ui.getEditorText() ?? "";
+    } catch {
+      return;
+    }
+    const text = raw.trim();
+    // Only act on lints that match the text currently in the editor.
+    if (text.length === 0 || text !== lastLintedText || lastLints.length === 0) {
+      ctx.ui.notify("Harper: nothing to fix", "info");
+      return;
+    }
+    const { fixed, applied } = fixText(text, lastLints);
+    if (applied === 0) {
+      ctx.ui.notify("Harper: no auto-fixable issues", "info");
+      return;
+    }
+    ctx.ui.setEditorText(fixed);
+    // Force the poll to re-check the corrected text and refresh the widget.
+    lastChecked = "\u0000";
+    lastSeen = "\u0000";
+    lastLints = [];
+    lastLintedText = "";
+    ctx.ui.notify(`Harper: applied ${applied} fix${applied === 1 ? "" : "es"}`, "info");
+  }
+
+  pi.registerShortcut("alt+g", {
+    description: "Apply Harper's grammar fixes to the chat input",
+    handler: (ctx) => applyFixesNow(ctx),
+  });
+
+  pi.registerCommand("grammar-fix", {
+    description: "Apply Harper's suggested fixes to the current chat input",
+    handler: async (_args, ctx) => applyFixesNow(ctx),
   });
 }

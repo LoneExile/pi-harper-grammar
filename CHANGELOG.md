@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-07-23
+
+### Added
+
+- Apply Harper's suggested fixes to the current chat input in place, via the
+  `alt+g` hotkey or the `/grammar-fix` command. Fixes are applied right-to-left
+  by span; only concrete "replace" suggestions are applied (lints without a
+  replacement are left for manual editing). The widget shows an `alt+g to fix`
+  hint only when at least one issue is auto-fixable.
+
 ## [0.1.3] - 2026-07-23
 
 ### Fixed
@@ -50,7 +60,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `$HARPER_CLI` override and a one-line install hint when `harper-cli` is not
   found on `PATH`.
 
-[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.3...HEAD
+[Unreleased]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.3...v0.2.0
 [0.1.3]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/LoneExile/pi-harper-grammar/compare/v0.1.0...v0.1.1

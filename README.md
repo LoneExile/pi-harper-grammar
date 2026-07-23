@@ -52,7 +52,14 @@ Just type. As soon as your input is stable for a moment, Harper checks it and
 lists any issues below the editor. The widget clears when the input is empty,
 corrected, or a slash command.
 
+- **`alt+g`** — apply Harper's suggested fixes to the current input, in place.
+- **`/grammar-fix`** — same as `alt+g`, as a slash command.
 - **`/grammar`** — toggle the live checker on/off.
+
+`alt+g` applies the issues Harper can concretely replace (spelling, agreement,
+a/an, punctuation, etc.). A lint with no replacement suggestion is left for you
+to fix by hand — the `alt+g to fix` hint appears only when something is
+auto-fixable.
 
 ## Configuration
 
