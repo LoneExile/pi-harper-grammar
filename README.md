@@ -1,5 +1,7 @@
 # pi-harper-grammar
 
+> **Type it right, make the agent guess less.**
+
 [![CI](https://github.com/LoneExile/pi-harper-grammar/actions/workflows/ci.yml/badge.svg)](https://github.com/LoneExile/pi-harper-grammar/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/pi-harper-grammar.svg)](https://www.npmjs.com/package/pi-harper-grammar)
 [![npm downloads](https://img.shields.io/npm/dm/pi-harper-grammar.svg)](https://www.npmjs.com/package/pi-harper-grammar)
