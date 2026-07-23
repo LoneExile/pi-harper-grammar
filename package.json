@@ -1,7 +1,7 @@
 {
   "name": "pi-harper-grammar",
   "version": "0.2.3",
-  "description": "Live grammar checking of the Pi/OMP chat input box, powered by Harper. Lints what you are about to send — not files.",
+  "description": "Type it right, make the agent guess less — live grammar-check (and one-key alt+g fix) for the Pi/OMP chat input, powered by Harper.",
   "keywords": [
     "pi-package",
     "pi",
@@ -32,7 +32,7 @@
   },
   "omp": {
     "name": "pi-harper-grammar",
-    "description": "Live grammar-check (and one-key alt+g fix) of the chat input box, powered by Harper.",
+    "description": "Type it right, make the agent guess less — live grammar-check + one-key alt+g fix, powered by Harper.",
     "extensions": [
       "./extensions"
     ],
