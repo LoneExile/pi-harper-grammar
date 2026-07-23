@@ -21,13 +21,14 @@ Enter
 Sleep 16s
 Show
 
-# A grammatically messy message → Harper flags it live in a widget below the editor.
+# A messy message → Grammar flags it live below the editor, with an "alt+g to fix" hint.
 Sleep 800ms
-Type "This are a test with an mistake and he go there"
+Type "i dont think its right"
 Sleep 3.5s
 
-# Fix it → the widget clears once the input is clean.
+# The widget shows an "alt+g to fix" hint — one key applies every fix in a real
+# terminal. (VHS can't emit the Alt chord, so here we just clear and retype clean.)
 Ctrl+U
-Sleep 1s
-Type "This is a well-written sentence."
+Sleep 800ms
+Type "I don't think it's right."
 Sleep 2.5s
