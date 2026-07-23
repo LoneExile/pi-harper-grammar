@@ -12,6 +12,7 @@ interface ExtensionUI {
   setWidget(key: string, content: string[] | undefined, options?: { placement?: WidgetPlacement }): void;
   getEditorText(): string;
   setEditorText(text: string): void;
+  setStatus(key: string, text: string | undefined): void;
   notify(message: string, type?: "info" | "warning" | "error"): void;
 }
 interface ExtensionContext {
@@ -169,6 +170,8 @@ export default function harperGrammar(pi: ExtensionAPI): void {
   let started = false; // guard against a second session_start registering a 2nd timer
   let lastLints: HarperLint[] = []; // full lint set from the most recent check (for fixing)
   let lastLintedText = ""; // the exact (trimmed) text those lints were computed against
+  const STATUS_KEY = "harper-grammar-status";
+  let appliedStatusText: string | null = null; // editor text when the apply-status was shown; cleared when it changes
 
   async function check(ctx: ExtensionContext, text: string): Promise<void> {
     running = true;
@@ -213,6 +216,10 @@ export default function harperGrammar(pi: ExtensionAPI): void {
         text = (ctx.ui.getEditorText() ?? "").trim();
       } catch {
         return;
+      }
+      if (appliedStatusText !== null && text !== appliedStatusText) {
+        ctx.ui.setStatus(STATUS_KEY, undefined); // clear the "applied fixes" note once you type something new
+        appliedStatusText = null;
       }
       if (text === lastChecked) return; // already reflected in the widget
       if (text.length === 0 || text.startsWith("/")) {
@@ -264,12 +271,14 @@ export default function harperGrammar(pi: ExtensionAPI): void {
     const text = raw.trim();
     // Only act on lints that match the text currently in the editor.
     if (text.length === 0 || text !== lastLintedText || lastLints.length === 0) {
-      ctx.ui.notify("Harper: nothing to fix", "info");
+      ctx.ui.setStatus(STATUS_KEY, "Harper: nothing to fix");
+      appliedStatusText = text;
       return;
     }
     const { fixed, applied } = fixText(text, lastLints);
     if (applied === 0) {
-      ctx.ui.notify("Harper: no auto-fixable issues", "info");
+      ctx.ui.setStatus(STATUS_KEY, "Harper: no auto-fixable issues");
+      appliedStatusText = text;
       return;
     }
     ctx.ui.setEditorText(fixed);
@@ -278,7 +287,8 @@ export default function harperGrammar(pi: ExtensionAPI): void {
     lastSeen = "\u0000";
     lastLints = [];
     lastLintedText = "";
-    ctx.ui.notify(`Harper: applied ${applied} fix${applied === 1 ? "" : "es"}`, "info");
+    ctx.ui.setStatus(STATUS_KEY, `Harper: applied ${applied} fix${applied === 1 ? "" : "es"}`);
+    appliedStatusText = fixed.trim();
   }
 
   pi.registerShortcut("alt+g", {
