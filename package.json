@@ -1,6 +1,6 @@
 {
   "name": "pi-harper-grammar",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Live grammar checking of the Pi/OMP chat input box, powered by Harper. Lints what you are about to send — not files.",
   "keywords": [
     "pi-package",
