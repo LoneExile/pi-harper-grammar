@@ -1,6 +1,6 @@
 {
   "name": "pi-harper-grammar",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Live grammar checking of the Pi/OMP chat input box, powered by Harper. Lints what you are about to send — not files.",
   "keywords": [
     "pi-package",
@@ -24,7 +24,9 @@
     "url": "https://github.com/LoneExile/pi-harper-grammar/issues"
   },
   "pi": {
-    "extensions": ["./extensions"]
+    "extensions": [
+      "./extensions"
+    ]
   },
   "scripts": {
     "typecheck": "tsc --noEmit"
