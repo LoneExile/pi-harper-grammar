@@ -2,6 +2,8 @@
 // Checks what you are ABOUT to send — the text in the input editor — not files.
 // Works in Pi and OMP (Oh My Pi). Toggle with /grammar.
 
+import { spawn } from "node:child_process";
+
 // Minimal structural types for just the extension-API surface this file uses.
 // Declaring them locally keeps the package harness-agnostic (Pi and OMP both
 // provide a superset at runtime) and free of any type-only dependency.
@@ -26,7 +28,6 @@ interface ExtensionAPI {
     def: { description: string; handler: (args: string, ctx: ExtensionContext) => void | Promise<void> },
   ): void;
 }
-import { spawn } from "node:child_process";
 
 const WIDGET_KEY = "harper-grammar";
 const POLL_MS = 600; // editor is polled this often; a check fires once text is stable
@@ -47,7 +48,7 @@ interface HarperLint {
 function cleanSuggestion(s: string | undefined): string {
   if (!s) return "";
   // Harper phrases suggestions like: Replace with: “a”
-  const m = s.match(/[“"']([^”"']+)[”"']/);
+  const m = s.match(/“([^”]+)”/);
   if (m) return m[1];
   return s.replace(/^\s*Replace with:\s*/i, "").trim();
 }
@@ -71,6 +72,7 @@ function runHarper(bin: string, text: string): Promise<{ lints: HarperLint[]; en
   child.on("error", (err) => {
     if (err && typeof err === "object" && "code" in err && err.code === "ENOENT") enoent = true;
   });
+  child.stdin?.on("error", () => {});
   child.on("close", () => {
     if (enoent) {
       resolve({ lints: [], enoent: true });
@@ -120,6 +122,7 @@ export default function harperGrammar(pi: ExtensionAPI): void {
   let lastSeen = ""; // text observed on the previous tick (typing-stability tracker)
   let lastChecked = ""; // text most recently sent to harper (dedupe)
   let running = false;
+  let started = false; // guard against a second session_start registering a 2nd timer
 
   async function check(ctx: ExtensionContext, text: string): Promise<void> {
     running = true;
@@ -153,6 +156,8 @@ export default function harperGrammar(pi: ExtensionAPI): void {
 
   pi.on("session_start", async (_event, ctx) => {
     if (!ctx.hasUI) return; // no editor to check in headless/print/subagent modes
+    if (started) return;
+    started = true;
     const timer = ctx.setInterval(() => {
       if (!enabled || running || missing) return;
       let text: string;
@@ -177,7 +182,10 @@ export default function harperGrammar(pi: ExtensionAPI): void {
       // Text is stable and differs from the last check → run Harper.
       void check(ctx, text);
     }, POLL_MS);
-    pi.on("session_shutdown", () => ctx.clearTimer(timer));
+    pi.on("session_shutdown", () => {
+      ctx.clearTimer(timer);
+      started = false; // allow re-registration if the session restarts in-process
+    });
   });
 
   pi.registerCommand("grammar", {
