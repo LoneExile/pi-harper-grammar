@@ -1,5 +1,10 @@
 # pi-harper-grammar
 
+[![CI](https://github.com/LoneExile/pi-harper-grammar/actions/workflows/ci.yml/badge.svg)](https://github.com/LoneExile/pi-harper-grammar/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/pi-harper-grammar.svg)](https://www.npmjs.com/package/pi-harper-grammar)
+[![npm downloads](https://img.shields.io/npm/dm/pi-harper-grammar.svg)](https://www.npmjs.com/package/pi-harper-grammar)
+[![license](https://img.shields.io/npm/l/pi-harper-grammar.svg)](./LICENSE)
+
 Live grammar checking of the **chat input box** in [Pi](https://pi.dev) and
 [OMP (Oh My Pi)](https://omp.sh), powered by [Harper](https://writewithharper.com).
 

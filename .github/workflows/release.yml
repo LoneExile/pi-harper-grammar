@@ -2,8 +2,13 @@ name: Release
 
 # Publishes to npm when a GitHub Release is published (tag the release with the
 # version, e.g. v0.1.0, after bumping "version" in package.json). Can also be
-# run manually. Requires an npm "Automation" access token stored as the
-# repository secret NPM_TOKEN (Automation tokens bypass 2FA for CI publishes).
+# run manually.
+#
+# Tokenless: authentication uses npm Trusted Publishing (OIDC) — no NPM_TOKEN.
+# One-time setup on npmjs.com: package "pi-harper-grammar" → Settings →
+# Publishing access → add a GitHub Actions trusted publisher for
+# repo LoneExile/pi-harper-grammar, workflow ".github/workflows/release.yml".
+# Provenance is generated automatically for trusted-publisher releases.
 
 on:
   release:
@@ -12,7 +17,7 @@ on:
 
 permissions:
   contents: read
-  id-token: write # npm provenance (OIDC)
+  id-token: write # required for npm Trusted Publishing (OIDC) + provenance
 
 jobs:
   publish:
@@ -23,8 +28,10 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: npm
           registry-url: https://registry.npmjs.org
+
+      - name: Upgrade npm (Trusted Publishing needs npm >= 11.5.1)
+        run: npm install -g npm@latest
 
       - name: Install
         run: npm ci
@@ -33,6 +40,4 @@ jobs:
         run: npm run typecheck
 
       - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public
