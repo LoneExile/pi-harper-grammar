@@ -26,7 +26,9 @@
   "pi": {
     "extensions": [
       "./extensions"
-    ]
+    ],
+    "video": "https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.mp4",
+    "image": "https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.gif"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

@@ -13,13 +13,7 @@ shows issues (with fixes) in a widget just below the editor. It does **not**
 read or check your project files, and it never sends anything to the model to
 do the check: everything runs locally through `harper-cli`.
 
-```
-╭─ … ──────────────────────────────────────────────────╮
-╰─ This are a test with an mistake and he go there      ─╯
- ⚠ Harper: 2 issues
-   • "an" → a     —  Incorrect indefinite article.
-   • "go" → goes  —  The form of the verb must agree in grammatical number with the pronoun.
-```
+![pi-harper-grammar demo](https://github.com/LoneExile/pi-harper-grammar/releases/download/v0.1.1/demo.gif)
 
 ## Prerequisite: Harper
 
